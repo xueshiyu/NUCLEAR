@@ -1,20 +1,18 @@
 #!/usr/bin/env python
-#coding=utf-8
+# coding=utf-8
 
-import numpy as np
-import pandas as pd
-import math, time
-#import itertools
-#from sklearn import preprocessing
-#from operator import itemgetter
-#from sklearn.metrics import mean_squared_error
-#from math import sqrt
-from keras.models import Sequential
+import math
+import time
 from keras.layers.core import Dense, Dropout, Activation
 from keras.layers.recurrent import LSTM
-from util.data_utils import load_data,get_data
+# import itertools
+# from sklearn import preprocessing
+# from operator import itemgetter
+# from sklearn.metrics import mean_squared_error
+# from math import sqrt
+from keras.models import Sequential
 
-
+from util.data_utils import load_data, get_data
 
 
 def build_model(layers):
@@ -36,25 +34,27 @@ def build_model(layers):
     model.add(Activation("linear"))
 
     start = time.time()
-    model.compile(loss="mse", optimizer="rmsprop",metrics=['accuracy'])
+    model.compile(loss="mse", optimizer="rmsprop", metrics=['accuracy'])
     print("Compilation Time : ", time.time() - start)
     return model
 
+
 def build_model2(layers):
-        d = 0.2
-        model = Sequential()
-        model.add(LSTM(128, input_shape=(layers[1], layers[0]), return_sequences=True))
-        model.add(Dropout(d))
-        model.add(LSTM(64, input_shape=(layers[1], layers[0]), return_sequences=False))
-        model.add(Dropout(d))
-        # model.add(LSTM(32,input_shape=(layers[1], layers[0]), return_sequences=False))
-        # model.add(Dropout(0.1))
-        model.add(Dense(16,init='uniform',activation='relu'))
-        model.add(Dense(1,init='uniform',activation='relu'))
-        start = time.time()
-        model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-        print("Compilation Time : ", time.time() - start)
-        return model
+    d = 0.2
+    model = Sequential()
+    model.add(LSTM(128, input_shape=(layers[1], layers[0]), return_sequences=True))
+    model.add(Dropout(d))
+    model.add(LSTM(64, input_shape=(layers[1], layers[0]), return_sequences=False))
+    model.add(Dropout(d))
+    # model.add(LSTM(32,input_shape=(layers[1], layers[0]), return_sequences=False))
+    # model.add(Dropout(0.1))
+    model.add(Dense(16, init='uniform', activation='relu'))
+    model.add(Dense(1, init='uniform', activation='relu'))
+    start = time.time()
+    model.compile(loss='mse', optimizer='adam')
+    print("Compilation Time : ", time.time() - start)
+    return model
+
 
 def main():
     window = 5
@@ -71,19 +71,19 @@ def main():
         X_train,
         y_train,
         batch_size=225,
-        nb_epoch=1000,
+        nb_epoch=2000,
         validation_split=0.001,
         verbose=2)
 
-    trainScore = model.evaluate(X_train, y_train, verbose=0)
-    print('Train Score: %.2f MSE (%.2f RMSE)' % (trainScore[0], math.sqrt(trainScore[0])))
+    trainScore = model.evaluate(X_train, y_train, verbose=2)
+    # print('Train Score: %.2f MSE (%.2f RMSE)' % (trainScore[0], math.sqrt(trainScore[0])))
 
-    testScore = model.evaluate(X_test, y_test, verbose=0)
-    print('Test Score: %.2f MSE (%.2f RMSE)' % (testScore[0], math.sqrt(testScore[0])))
+    testScore = model.evaluate(X_test, y_test, verbose=2)
+    # print('Test Score: %.2f MSE (%.2f RMSE)' % (testScore[0], math.sqrt(testScore[0])))
     # print(X_test[-1])
     diff = []
     ratio = []
-    p = model.predict(X_test)
+    p = model.predict(X_train)
     for u in range(len(y_test)):
         pr = p[u][0]
         ratio.append((y_test[u] / pr) - 1)
@@ -93,9 +93,10 @@ def main():
     import matplotlib.pyplot as plt2
 
     plt2.plot(p, color='red', label='prediction')
-    plt2.plot(y_test, color='blue', label='y_test')
+    plt2.plot(y_train, color='blue', label='y_test')
     plt2.legend(loc='upper left')
     plt2.show()
+
 
 if __name__ == '__main__':
     main()

@@ -20,7 +20,7 @@ values = ss.fit_transform(values)
 print(values[:,2])
 # print(values[:,3])
 # print(values)
-groups = [3]
+groups = [120]
 # print(values[1:,3])
 # print(dataset.columns[3])
 i = 1
@@ -30,6 +30,6 @@ for group in groups:
     p = plt.subplot(len(groups), 1, i)
     p.plot(values[:, group])
     plt.title(dataset.columns[group], y=1, loc='right')
-    p.axis([0.0,30,-40,40])
+    # p.axis([0.0,30,-40,40])
     i += 1
 plt.show()

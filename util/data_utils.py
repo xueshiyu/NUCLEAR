@@ -3,16 +3,16 @@
 #@Author:Shiyu Xue
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler,MinMaxScaler
 
 
-ss = StandardScaler()
+ss = MinMaxScaler()
 
 
 def get_data(data_name):
     df=pd.read_excel(data_name)
     values = df.values
-    values = values[1:50, 1:5]
+    values = values[1:200, 1:5]
     values = ss.fit_transform(values)
     return values
 
