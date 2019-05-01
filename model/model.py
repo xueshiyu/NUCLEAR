@@ -12,7 +12,7 @@ from keras.layers.recurrent import LSTM
 # from math import sqrt
 from keras.models import Sequential
 
-from util.data_utils import load_data, get_data
+from util.data_utils import load_data, get_data, get_test_data
 
 
 def build_model(layers):
@@ -50,16 +50,16 @@ def build_model2(layers):
     # model.add(Dropout(0.1))
     model.add(Dense(16, init='uniform', activation='relu'))
     model.add(Dense(1, init='uniform', activation='relu'))
-    start = time.time()
     model.compile(loss='mse', optimizer='adam')
-    print("Compilation Time : ", time.time() - start)
     return model
 
 
 def main():
     window = 5
-    df = get_data('../data/press.xls')
+    df = get_data('../data/国电头/press.xls')
+    df_test = get_test_data('../data/国电头/press.xls')
     X_train, y_train, X_test, y_test = load_data(df[:-1], window)  #
+    X_TEST, Y_TEST , _, __ = load_data(df_test[:-1],window)
     print("X_train", X_train.shape)
     print("y_train", y_train.shape)
     print("X_test", X_test.shape)
@@ -70,20 +70,13 @@ def main():
     model.fit(
         X_train,
         y_train,
-        batch_size=225,
-        nb_epoch=2000,
+        batch_size=50,
+        nb_epoch=500,
         validation_split=0.001,
         verbose=2)
-
-    trainScore = model.evaluate(X_train, y_train, verbose=2)
-    # print('Train Score: %.2f MSE (%.2f RMSE)' % (trainScore[0], math.sqrt(trainScore[0])))
-
-    testScore = model.evaluate(X_test, y_test, verbose=2)
-    # print('Test Score: %.2f MSE (%.2f RMSE)' % (testScore[0], math.sqrt(testScore[0])))
-    # print(X_test[-1])
     diff = []
     ratio = []
-    p = model.predict(X_train)
+    p = model.predict(X_TEST)
     for u in range(len(y_test)):
         pr = p[u][0]
         ratio.append((y_test[u] / pr) - 1)
@@ -93,8 +86,10 @@ def main():
     import matplotlib.pyplot as plt2
 
     plt2.plot(p, color='red', label='prediction')
-    plt2.plot(y_train, color='blue', label='y_test')
-    plt2.legend(loc='upper left')
+    plt2.plot(Y_TEST, color='blue', label='y_test')
+    plt2.legend(loc='upper right')
+    plt2.axis([0,150,-0.25,1.25])
+    # p.axis([0.0, 100, -0.25, 1.25])
     plt2.show()
 
 

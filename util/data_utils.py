@@ -12,10 +12,16 @@ ss = MinMaxScaler()
 def get_data(data_name):
     df=pd.read_excel(data_name)
     values = df.values
-    values = values[1:200, 1:5]
+    values = values[1:, 30:34]
     values = ss.fit_transform(values)
     return values
 
+def get_test_data(data_name):
+    df = pd.read_excel(data_name)
+    values = df.values
+    values = values[1:, 35:39]
+    values = ss.fit_transform(values)
+    return values
 
 
 def load_data(data,seq_len):
